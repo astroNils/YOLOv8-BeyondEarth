@@ -1,0 +1,12 @@
+geopandas>=0.14.1
+numpy>=1.24.4
+opencv_python>=4.7.0.72
+opencv_python_headless>=4.8.1.78
+pandas>=2.2.1
+rasterio>=1.3.9
+sahi>=0.11.16
+Shapely>=2.0.3
+scikit-image>=0.22.0
+torch>=2.2.0+cu121
+tqdm>=4.65.0
+ultralytics>=8.1.15

@@ -1,0 +1,34 @@
+[build-system]
+requires = ["geopandas>=0.14.1",
+    "numpy>=1.24.4",
+    "opencv_python>=4.7.0.72",
+    "opencv_python_headless>=4.8.1.78",
+    "pandas>=2.2.1",
+    "rasterio>=1.3.9",
+    "sahi>=0.11.16",
+    "Shapely>=2.0.3",
+    "scikit-image>=0.22.0",
+    "torch>=2.2.0+cu121",
+    "tqdm>=4.65.0",
+    "ultralytics>=8.1.15"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "YOLOv8BeyondEarth"
+version = "0.0.1"
+license = {file = "LICENSE"}
+authors = [
+  { name="Nils C. Prieur", email="prieur.nils@gmail.com" },
+]
+description = "Tools and scripts to create YOLOv8 custom datasets, train the model and post-process the obtained results. Strong focus on the use of satellite imagery, and application on soild planetary bodies in our Solar system."
+readme = "README.md"
+requires-python = ">=3.9"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/astroNils/YOLOv8-BeyondEarth"
+"Bug Tracker" = "https://github.com/astroNils/YOLOv8-BeyondEarth/issues"
