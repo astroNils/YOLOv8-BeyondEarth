@@ -4,6 +4,16 @@ import rasterio as rio
 import geopandas as gpd
 
 from shapely.geometry import (box, Polygon)
+
+
+def remvove_edge_predictions():
+    """
+    it should take in the in_raster, the true footprint should be computed.
+    Then should check if predictions are touching the true footprint. If yes give a column a value.
+
+    """
+    None
+
 def is_within_slice(polygon, slice_height, slice_width):
     """
     Returns True if the polygon is touching one of the edge of the slice else False
@@ -100,7 +110,7 @@ def check_mask_validity(binary_mask, min_area_threshold=4):
     rows = np.any(binary_mask, axis=1)
     cols = np.any(binary_mask, axis=0)
 
-    # is the mask at least two pixels in width or height?
+    # is the mask at least a pixel in width or height?
     if not np.any(rows) or not np.any(cols):
         wh_criteria = False
     else:

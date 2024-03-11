@@ -22,9 +22,9 @@ def YOLOv8(detection_model, image, has_mask, shift_amount, slice_height, slice_w
     - detection_model.image_size = 1024.
 
     2. If you are in the opposite situation, where you realized that most of the large boulders are missed out. You can
-    increase the slice height and width and decrease the detection_model.image_size.
+    increase the slice height and width.
     - slice_height, slice_width = 1024
-    - detection_model.image_size = 256 or 512.
+    - detection_model.image_size = 512, 1024.
 
     You can get the best of both worlds by combining predictions (1) and (2) with NMS. Obviously the larger the
     slices height and width, and the larger the detection_model.image_size, the more time it takes to run this
@@ -85,7 +85,10 @@ def YOLOv8(detection_model, image, has_mask, shift_amount, slice_height, slice_w
                 category_id = int(prediction[5])
                 category_name = detection_model.category_mapping[str(category_id)]
 
-                # resizing from model.image_size to slice_width and slice_height
+                # resizing from inference_size to slice_size.
+                # Note that the polygon could be calculated from the original inference size to not loose
+                # accuracy during the resizing of the image. However, skipping the resizing leads to very large increase
+                # in computation time, especially for large
                 bool_mask = cv2.resize(bool_mask, (slice_width, slice_height))  # [1,0]
                 bool_mask[bool_mask >= 0.5] = 1
                 bool_mask[bool_mask < 0.5] = 0
@@ -132,6 +135,9 @@ def get_sliced_prediction(in_raster,
                           postprocess_class_agnostic: bool = False):
     """
     Function for slice image + get predicion for each slice + combine predictions in full image.
+
+    The time to run the script is dependent on the number of predictions over the whole image. This is because we need
+    to loop through each prediction and transform the bool_mask to polygon. 
 
     Args:
         in_raster: str or Path()
