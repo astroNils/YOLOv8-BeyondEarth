@@ -6,6 +6,8 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module" module-name="rastertools" />
+    <orderEntry type="module" module-name="shptools" />
   </component>
   <component name="PyDocumentationSettings">
     <option name="format" value="PLAIN" />

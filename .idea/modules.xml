@@ -3,6 +3,8 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/YOLOv8-BeyondEarth.iml" filepath="$PROJECT_DIR$/.idea/YOLOv8-BeyondEarth.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../rastertools/.idea/rastertools.iml" filepath="$PROJECT_DIR$/../rastertools/.idea/rastertools.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../shptools/.idea/shptools.iml" filepath="$PROJECT_DIR$/../shptools/.idea/shptools.iml" />
     </modules>
   </component>
 </project>
