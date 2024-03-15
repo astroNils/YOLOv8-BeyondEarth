@@ -49,7 +49,7 @@ def YOLOv8(detection_model, image, has_mask, shift_amount, slice_size, min_area_
     shift_x = shift_amount[0]
     shift_y = shift_amount[1]
 
-    prediction_results = detection_model.model(image, imgsz=detection_model.image_size, verbose=verbose,
+    prediction_results = detection_model.model(image, imgsz=detection_model.image_size, verbose=False,
                                                device=detection_model.device)
 
     # if no predictions
