@@ -16,7 +16,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "YOLOv8BeyondEarth"
-version = "0.0.1"
+version = "0.0.4"
 license = {file = "LICENSE"}
 authors = [
   { name="Nils C. Prieur", email="prieur.nils@gmail.com" },

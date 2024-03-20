@@ -107,7 +107,7 @@ def YOLOv8(detection_model, image, has_mask, shift_amount, slice_size, min_area_
 
                 if area > min_area_threshold:
                     try:
-                        polygon = binary_mask_to_polygon(bool_mask, tolerance=0)
+                        polygon = binary_mask_to_polygon(bool_mask)
                         if downscale_pred:
                             polygon_slice = polygon
                         else:
@@ -171,10 +171,8 @@ def get_sliced_prediction(in_raster,
             minimum confidence threshold, values below will be automatically filtered away.
         has_mask: bool
         interim_dir: str or Path()
-        slice_height: int
-            Height of each slice.  Defaults to ``None``.
-        slice_width: int
-            Width of each slice.  Defaults to ``None``.
+        slice_sze: int
+            Height and width of each slice.  Defaults to ``None``.
         overlap_height_ratio: float
             Fractional overlap in height of each window (e.g. an overlap of 0.2 for a window
             of size 512 yields an overlap of 102 pixels).
@@ -225,8 +223,7 @@ def get_sliced_prediction(in_raster,
     frames = []
     # perform sliced prediction
     for i, image in tqdm(enumerate(slice_image_result.images), total=num_slices):
-        df = YOLOv8(detection_model, image, has_mask, shift_amounts[i], slice_size, min_area_threshold,
-                               downscale_pred)
+        df = YOLOv8(detection_model, image, has_mask, shift_amounts[i], slice_size, min_area_threshold, downscale_pred)
         if df.shape[0] > 0:
             frames.append(df)
 
@@ -235,13 +232,9 @@ def get_sliced_prediction(in_raster,
 
     # keep edge predictions (within 10% of slice size from the true footprint edge)
 
-    # extract footprint
-    raster.true_footprint(in_raster, tmp_dir / "true-footprint.shp")
+    # extract true footprint
+    gdf_true_footprint = raster.true_footprint(in_raster, tmp_dir / "true-footprint.shp")
     in_res = raster_metadata.get_resolution(in_raster)[0]
-    gdf_true_footprint = gpd.read_file(tmp_dir / "true-footprint.shp")
-    gdf_true_footprint = gpd.GeoDataFrame(geometry=[gdf_true_footprint.unary_union.convex_hull],
-                                          crs=gdf_true_footprint.crs)
-    gdf_true_footprint.to_file(tmp_dir / "true-footprint.shp")
     gpd.GeoDataFrame(geometry=gdf_true_footprint.geometry.boundary.values, crs=gdf_true_footprint.crs).to_file(
         tmp_dir / "true-footprint-as-a-line.shp")
     gdf_line_buffer = shp.buffer(tmp_dir / "true-footprint-as-a-line.shp", slice_size * 0.10 * in_res,
@@ -278,32 +271,14 @@ def get_sliced_prediction(in_raster,
 
     if postprocess:
         # Non-maximum suppression (NMS)
-        # Note that I have a few issues with nms from LSNMS.. I am currently using wbc from LSNMS which is a
-        # workaround to get the correct results. Below, I have commented a few lines showing how to do the NMS
-        # step with torchvision or nms from lsnms.
-
         # regardless of the classes ids (right now is a class agnoistic not supported)
         if postprocess_class_agnostic:
-            #keep = nms(boxes=np.stack(gdf.bbox.values), scores=gdf.score.values,
-            #           iou_threshold=postprocess_match_threshold, class_ids=None, rtree_leaf_size=32)
-
-            #keep = nms_torch(boxes=torch.tensor(np.stack(gdf.bbox.values)), scores=torch.tensor(gdf.score.values),
-            #                 iou_threshold=postprocess_match_threshold)
-
-            pooled_boxes, pooled_scores, cluster_indices = wbc(boxes=np.stack(gdf.bbox.values), scores=gdf.score.values,
-                                                               iou_threshold=postprocess_match_threshold)
+            keep = nms(boxes=np.stack(gdf.bbox.values), scores=gdf.score.values,
+                       iou_threshold=postprocess_match_threshold, class_ids=None, rtree_leaf_size=32)
         # or taking into account the classes ids
         else:
-            #keep = nms(boxes=np.stack(gdf.bbox.values), scores=gdf.score.values,
-            #           iou_threshold=postprocess_match_threshold, class_ids=gdf.category_id.values, rtree_leaf_size=32)
-
-            #keep = batched_nms_torch(boxes=torch.tensor(np.stack(gdf.bbox.values)), scores=torch.tensor(gdf.score.values),
-            #                 idxs=torch.tensor(gdf.category_id.values), iou_threshold=postprocess_match_threshold)
-
-            pooled_boxes, pooled_scores, cluster_indices = wbc(boxes=np.stack(gdf.bbox.values), scores=gdf.score.values,
-                                                               iou_threshold=postprocess_match_threshold)
-
-        keep = np.array([a for a, b in cluster_indices])
+            keep = nms(boxes=np.stack(gdf.bbox.values), scores=gdf.score.values,
+                       iou_threshold=postprocess_match_threshold, class_ids=gdf.category_id.values, rtree_leaf_size=32)
 
         # saving post-processed shapefiles
         gdf_nms = gdf.loc[keep]

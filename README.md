@@ -39,6 +39,16 @@ python -m pip install --index-url https://test.pypi.org/simple/ --no-deps YOLOv8
 pip install -r requirements.txt
 ````
 
+#### sahi
+
+To get the last version of sahi.
+
+```bash
+git clone https://github.com/obss/sahi.git
+cd sahi
+pip install -e . 
+```
+
 You should now have access to this module in Python.
 
 ```bash
