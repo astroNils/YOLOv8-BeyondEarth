@@ -1,5 +1,5 @@
 geopandas>=0.14.1
-lsnms>=0.4.3
+lsnms>=0.4.4
 numpy>=1.24.4
 opencv_python>=4.7.0.72
 opencv_python_headless>=4.8.1.78
