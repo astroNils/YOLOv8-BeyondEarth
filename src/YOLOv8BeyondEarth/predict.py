@@ -197,7 +197,7 @@ def get_sliced_prediction(in_raster,
     in_raster = Path(in_raster)
     output_dir = Path(output_dir)
     out_png = in_raster.with_name(in_raster.stem + ".png")
-    raster_convert.tiff_to_png(in_raster, out_png)
+    raster_convert.tiff_to_png(in_raster, out_png) # only work with 8bit
 
     # create temporary directory
     tmp_dir = (Path.home() / "tmp")
@@ -235,7 +235,8 @@ def get_sliced_prediction(in_raster,
     # extract true footprint
     gdf_true_footprint = raster.true_footprint(in_raster, tmp_dir / "true-footprint.shp")
     in_res = raster_metadata.get_resolution(in_raster)[0]
-    gpd.GeoDataFrame(geometry=gdf_true_footprint.geometry.boundary.values, crs=gdf_true_footprint.crs).to_file(
+    in_meta = raster_metadata.get_profile(in_raster)
+    gpd.GeoDataFrame(geometry=gdf_true_footprint.geometry.boundary.values, crs=in_meta["crs"].to_wkt()).to_file(
         tmp_dir / "true-footprint-as-a-line.shp")
     gdf_line_buffer = shp.buffer(tmp_dir / "true-footprint-as-a-line.shp", slice_size * 0.10 * in_res,
                                  (tmp_dir / "footprint-buffer.shp"))
