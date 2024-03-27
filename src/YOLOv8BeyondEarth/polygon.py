@@ -54,7 +54,7 @@ def add_geometries(in_raster, df):
         for polygon in df.polygon.values:
             xs, ys = rio.transform.xy(src.transform, polygon[:, 1], polygon[:, 0])
             boulder_geometry.append(Polygon(np.stack([xs, ys], axis=-1)))
-        gdf = gpd.GeoDataFrame(df, geometry=boulder_geometry, crs=in_crs)
+        gdf = gpd.GeoDataFrame(df, geometry=boulder_geometry, crs=in_crs.to_wkt())
         gdf["bbox"] = gdf.apply(row_bbox, axis=1)
     return gdf
 
