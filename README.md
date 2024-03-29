@@ -1,11 +1,9 @@
 # YOLOv8-BeyondEarth
-Tools and scripts to create YOLOv8 custom datasets, train the model and post-process the obtained results. Strong focus on the use of satellite imagery, and application on soild planetary bodies in our Solar system.
+YOLOv8-BeyondEarth is a repository that contains tools and scripts to create YOLOv8 custom datasets, train the model, and post-process the obtained results. There is a strong focus on the use of satellite imagery and the application of the YOLOv8 model on solid planetary bodies in our Solar system.
 
 ## To do
 
-- [ ] There is currently an issue with the non-maximum suppression from the lsnms github repository (https://github.com/remydubois/lsnms/issues/29). It does not filter the overlapping bounding boxes in the correct way. I have posted an issue on the repo. I need to follow-up if there is an answer.
 - [ ] Adapt `get_sliced_prediction` for use with Mask R-CNN. 
-- [ ] The `postprocess_class_agnostic` flag is currently not working (so basically the NMS step is working only for cases where the predictions are made for one object class).
 - [ ] Use of batches for prediction could speed up the prediction. 
 
 ## Installation
@@ -57,6 +55,20 @@ python
 
 ```python
 from YOLOv8BeyondEarth.predict import get_sliced_prediction
+```
+
+## Bugs
+
+If in your coordinate system, the latitude of origin is different than 0 degrees and this is expressed by the parameter `["Latitude of natural origin"`, there is a bug in the alignment of the prediction shapefiles (i.e., the shapefiles do not align with the raster/image). This bug does not happen for the Lunar Reconnaissance Orbiter NAC images. I wonder if this is due to the previously mentioned coordinate system/projection parameter and some bugs with rasterio/shapely? (need to do more digging there). When this parameter is not defined (i.e., a latitude of origin equal to 0), **then there is no bug**. Note that in NAC images, an equirectangular projection can be centered on a latitude without causing a bug. Looking at the coordinate system, the centering on the latitude seems to be described by another parameter (`["Latitude of 1st standard parallel"`). Therefore,  one solution could be to convert the coordinate system so that the centered latitude is described by the 1st standard parallel (or just keep the center latitude at 0 degrees). You can switch between coordinate systems with the help of `gdalwarp` (https://gdal.org/programs/gdalwarp.html).
+
+```bash
+gdalwarp -s_src <old_coordinate_system> -t_srs <wkt_string_where_only_latitude_1st_standard_parallel_is_used> <src_raster> <dst_raster>
+```
+
+You can get information about the old coordinate system with the help of `gdal_info`. 
+
+```bash
+gdalinfo <src_raster>
 ```
 
 ## Getting Started
